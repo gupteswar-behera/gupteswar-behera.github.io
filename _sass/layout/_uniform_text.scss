@@ -1,0 +1,91 @@
+/* ==========================================================================
+   UNIFORM TEXT SIZE (user, 2026-11-14)
+   Every piece of ordinary text is the same size as the body text: 1rem, which is
+   16px on phones and 18px on larger screens. Only headings stay larger.
+   The template made the sidebar, summaries, citations, share buttons and footer
+   smaller (0.6875 to 0.85 of the body size); this file sets them back.
+   Imported last in assets/css/main.scss so it wins.
+   ========================================================================== */
+
+/* Top menu: same size as the body, and the body's text colour so it does not look smaller */
+.greedy-nav a,
+.greedy-nav button,
+.masthead__menu-item {
+  font-size: 1rem;
+}
+.greedy-nav .visible-links a,
+.greedy-nav .hidden-links a {
+  color: var(--global-text-color);
+}
+
+/* Sidebar (the template's ".sidebar p, .sidebar li" rule outranks a plain class, so match it) */
+.sidebar p,
+.sidebar li,
+.author__bio,
+.author__urls,
+.author__urls li,
+.author__urls a,
+.author__urls span {
+  font-size: 1rem;
+}
+
+/* At full size the sidebar lines (location, lab) no longer fit on one line: let them wrap,
+   with the icon in its own column and the text wrapping beside it. */
+.author__urls li {
+  white-space: normal;
+}
+.author__urls li.author__desktop,
+.author__urls li > a {
+  display: flex;
+  align-items: baseline;
+}
+.author__urls li i {
+  flex: none;
+}
+
+/* Summaries under project and publication titles, and citations on the CV */
+.archive__item-excerpt,
+.archive__item-excerpt p,
+.archive__item-excerpt i,
+.archive__item p,
+.page__meta,
+.page__date {
+  font-size: 1rem;
+}
+
+/* Buttons (the sidebar's "Follow" button on phones, share buttons) and the previous/next links */
+.btn,
+.page__share-title,
+.page__share .btn,
+.page__share .btn span,
+.pagination--pager {
+  font-size: 1rem;
+}
+
+/* Footer */
+.page__footer,
+.page__footer footer,
+.page__footer-follow,
+.page__footer-follow li,
+.page__footer-follow strong,
+.page__footer-follow a,
+.page__footer-copyright,
+.page__footer-copyright a {
+  font-size: 1rem;
+}
+
+/* The template pins the footer to the bottom of the window, where (now at full text size) it covers
+   a large strip of every page while scrolling. It sits at the end of the page instead.
+   _main.js sets body margin-bottom to the footer height for the pinned footer; cancel that too. */
+.page__footer {
+  position: static;
+}
+body {
+  margin-bottom: 0 !important;
+}
+
+/* Line above the embedded demo */
+.embed-intro,
+.embed-intro a {
+  font-size: 1rem;
+}

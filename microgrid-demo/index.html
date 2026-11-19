@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Microgrid energy management with different storage</title>
+  <meta name="description" content="Interactive demonstration of rule-based and optimised operation of a campus microgrid with plug and play energy storage.">
+  <link rel="icon" type="image/png" href="assets/iitgn.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <img src="assets/spel.png" alt="Smart Power Electronics Laboratory logo">
+      <h1 class="site-title">Microgrid energy management with different storage</h1>
+      <img src="assets/iitgn.png" alt="Indian Institute of Technology Gandhinagar logo">
+    </div>
+  </header>
+
+  <div class="wrap">
+    <main>
+      <section class="panel" id="build" aria-labelledby="build-title">
+        <h2 id="build-title">Build the microgrid</h2>
+        <p class="section-note">Set the rating of each component, plug in one or more storage technologies, then adjust the costs.</p>
+
+        <h3 class="step"><span>1</span>Component ratings</h3>
+        <div class="ratings">
+          <div class="rating">
+            <span data-art="solar" data-size="large"></span>
+            <div class="rating-body">
+              <label for="pv-num">Solar array</label>
+              <div class="rating-value"><input id="pv-num" type="number" min="0" max="10000" step="50" inputmode="numeric"><span>kW</span></div>
+              <input id="pv" type="range" min="0" max="10000" step="250" aria-label="Solar array rating">
+            </div>
+          </div>
+          <div class="rating">
+            <span data-art="grid" data-size="large"></span>
+            <div class="rating-body">
+              <label for="grid-num">Grid connection</label>
+              <div class="rating-value"><input id="grid-num" type="number" min="0" max="10000" step="50" inputmode="numeric"><span>kW</span></div>
+              <input id="grid" type="range" min="0" max="10000" step="100" aria-label="Grid connection rating">
+            </div>
+          </div>
+          <div class="rating">
+            <span data-art="load" data-size="large"></span>
+            <div class="rating-body">
+              <label for="demand-num">Load, maximum demand</label>
+              <div class="rating-value"><input id="demand-num" type="number" min="1500" max="10000" step="50" inputmode="numeric"><span>kW</span></div>
+              <input id="demand" type="range" min="1500" max="10000" step="100" aria-label="Maximum demand">
+            </div>
+          </div>
+          <div class="rating">
+            <span data-art="diesel" data-size="large"></span>
+            <div class="rating-body">
+              <label for="diesel-num">Diesel generator</label>
+              <div class="rating-value"><input id="diesel-num" type="number" min="0" max="10000" step="50" inputmode="numeric"><span>kW</span></div>
+              <input id="diesel" type="range" min="0" max="10000" step="100" aria-label="Diesel generator rating">
+            </div>
+          </div>
+        </div>
+        <p class="hint">The load keeps its hourly shape and scales with maximum demand. Load that solar, storage, the grid connection and the diesel generator cannot meet goes unserved and is charged at the unserved load penalty.</p>
+
+        <h3 class="step"><span>2</span>Storage technologies</h3>
+        <fieldset>
+          <legend class="visually-hidden">Storage technologies, select any number</legend>
+          <div class="slots" id="slots"></div>
+        </fieldset>
+        <div class="ratings ratings-two" id="storage-sizes"></div>
+
+        <h3 class="step"><span>3</span>Costs</h3>
+        <div class="cost-fields" id="cost-fields"></div>
+
+        <div class="toolbar">
+          <div class="segmented" role="radiogroup" aria-label="Saved 48-hour period" id="windows"></div>
+          <button type="button" id="reset">Reset</button>
+          <span class="status" id="status" role="status" aria-live="polite"></span>
+        </div>
+      </section>
+
+      <section class="panel" id="operation" aria-labelledby="operation-title">
+        <h2 id="operation-title">The microgrid in operation</h2>
+        <p class="section-note">The same microgrid and the same two days, under two kinds of control. Moving dots show the direction of power. Use the switch on any component to disconnect it for the whole two days.</p>
+        <div class="pair">
+          <div class="card diagram">
+            <h4>Rule-based</h4>
+            <div id="diagram-rule"></div>
+          </div>
+          <div class="card diagram">
+            <h4>Optimised</h4>
+            <div id="diagram-opt"></div>
+          </div>
+        </div>
+        <div class="timebar">
+          <button type="button" class="primary" id="play">Play</button>
+          <input id="hour" type="range" min="0" max="47" step="1" aria-label="Hour of the 48-hour period">
+          <span class="clock" id="clock"></span>
+        </div>
+
+        <h3>Power over the two days</h3>
+        <div class="pair">
+          <div class="card">
+            <h4>Rule-based</h4>
+            <div class="legend" id="legend-rule"></div>
+            <div class="chart" id="chart-rule"></div>
+          </div>
+          <div class="card">
+            <h4>Optimised</h4>
+            <div class="legend" id="legend-opt"></div>
+            <div class="chart" id="chart-opt"></div>
+          </div>
+        </div>
+
+        <div class="pair" style="margin-top:16px">
+          <div class="card">
+            <h4>Grid price</h4>
+            <div class="legend" id="price-legend"></div>
+            <div class="chart" id="chart-price"></div>
+          </div>
+          <div class="card">
+            <h4>State of charge (% of nameplate capacity)</h4>
+            <div class="legend" id="level-legend"></div>
+            <div class="chart" id="chart-level"></div>
+          </div>
+        </div>
+
+        <div class="banner">
+          <p class="headline" id="headline"></p>
+          <div class="tiles" id="tiles"></div>
+        </div>
+
+        <h3>Energy over these two days</h3>
+        <div class="table-wrap"><table id="kpis"></table></div>
+
+        <h3>Where the cost comes from</h3>
+        <div class="legend" id="costs-legend"></div>
+        <div class="card"><div class="chart" id="chart-costs"></div></div>
+        <div class="table-wrap" style="margin-top:12px"><table id="costs"></table></div>
+
+        <details id="hourly">
+          <summary>Show the hourly values as a table</summary>
+          <div class="table-wrap"><table id="hourly-table"></table></div>
+        </details>
+      </section>
+
+      <section class="panel" id="systems" aria-labelledby="systems-title">
+        <h2 id="systems-title">Compare two systems</h2>
+        <p class="section-note">Choose the components, ratings, prices, solar profile and maximum load of two microgrids, separately from the settings above. The hourly shape of the load and of the grid price follow the saved days chosen above, and both use the two penalties set above, under optimised operation. Costs are running costs only: the cost of building each system is not included.</p>
+        <div class="pair">
+          <div class="card sys-config" id="sys-config-A"></div>
+          <div class="card sys-config" id="sys-config-B"></div>
+        </div>
+        <div class="toolbar">
+          <button type="button" id="sys-reset">Reset both systems</button>
+          <span class="status" id="sys-status" role="status" aria-live="polite"></span>
+        </div>
+
+        <h3>Power flow</h3>
+        <div class="pair">
+          <div class="card diagram"><h4>System A</h4><div id="sys-diagram-A"></div></div>
+          <div class="card diagram"><h4>System B</h4><div id="sys-diagram-B"></div></div>
+        </div>
+        <div class="timebar">
+          <button type="button" class="primary" id="sys-play">Play</button>
+          <input id="sys-hour" type="range" min="0" max="47" step="1" aria-label="Hour of the 48-hour period, system comparison">
+          <span class="clock" id="sys-clock"></span>
+        </div>
+
+        <h3>Power over the two days</h3>
+        <div class="pair">
+          <div class="card"><h4>System A</h4><div class="legend" id="sys-legend-A"></div><div class="chart" id="sys-chart-A"></div></div>
+          <div class="card"><h4>System B</h4><div class="legend" id="sys-legend-B"></div><div class="chart" id="sys-chart-B"></div></div>
+        </div>
+
+        <h3>State of charge (% of nameplate capacity)</h3>
+        <div class="pair">
+          <div class="card"><h4>System A</h4><div class="legend" id="sys-level-legend-A"></div><div class="chart" id="sys-level-A"></div></div>
+          <div class="card"><h4>System B</h4><div class="legend" id="sys-level-legend-B"></div><div class="chart" id="sys-level-B"></div></div>
+        </div>
+
+        <div class="banner">
+          <p class="headline" id="sys-headline"></p>
+          <div class="tiles" id="sys-tiles"></div>
+        </div>
+
+        <h3>Energy over these two days</h3>
+        <div class="table-wrap"><table id="sys-energy"></table></div>
+
+        <h3>Where the cost comes from</h3>
+        <div class="legend" id="sys-costs-legend"></div>
+        <div class="card"><div class="chart" id="sys-chart-costs"></div></div>
+        <div class="table-wrap" style="margin-top:12px"><table id="sys-costs"></table></div>
+      </section>
+
+      <!-- Hidden for now at the user's request. Remove "hidden" from the section to bring it back. -->
+      <section class="panel" id="choice" aria-labelledby="choice-title" hidden>
+        <h2 id="choice-title">Choosing the storage</h2>
+        <p class="section-note">All four technologies, run on the microgrid you built above with every element connected. A negative saving means the storage cost more to run than it saved.</p>
+        <h3 style="margin-top:0">Saving compared with no storage</h3>
+        <div class="legend" id="bars-legend"></div>
+        <div class="card"><div class="chart" id="chart-bars"></div></div>
+        <div class="table-wrap" style="margin-top:12px"><table id="compare"></table></div>
+
+        <h3>Efficiency against load</h3>
+        <p class="section-note">The optimiser sees each machine through a piecewise-linear model with breakpoints at 25% load intervals, marked with dots. Below the first breakpoint the machine is off.</p>
+        <div class="legend" id="eff-legend"></div>
+        <div class="eff-grid" id="eff-grid"></div>
+
+        <h3>Published conference results</h3>
+        <p class="section-note">One month of operation, solved offline. The system settings differ from the live demonstration above, so these numbers are not comparable with it.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Measure</th><th>PHES</th><th>BESS</th></tr></thead>
+            <tbody>
+              <tr><td>Solar energy cost (Rs lakh)</td><td>11.57</td><td>11.57</td></tr>
+              <tr><td>Grid import cost (Rs lakh)</td><td>57.80</td><td>55.47</td></tr>
+              <tr><td>Grid export income (Rs lakh)</td><td>38.95</td><td>23.23</td></tr>
+              <tr><td>Storage usage cost (Rs lakh)</td><td>22.98</td><td>16.35</td></tr>
+              <tr class="selected"><td>Total operating cost (Rs lakh)</td><td>53.40</td><td>60.16</td></tr>
+              <tr><td>Cost of energy (Rs per kWh)</td><td>3.83</td><td>4.31</td></tr>
+              <tr><td>Round-trip efficiency</td><td>80%</td><td>90.25%</td></tr>
+              <tr><td>Energy charged (MWh)</td><td>734.65</td><td>300.99</td></tr>
+              <tr><td>Energy taken out (MWh)</td><td>587.72</td><td>271.64</td></tr>
+              <tr><td>Grid import (MWh)</td><td>1,430.13</td><td>1,173.93</td></tr>
+              <tr><td>Grid export (MWh)</td><td>401.46</td><td>262.84</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="cite">Source: G. Behera and P. Bharadwaj, &ldquo;Smart Energy Management System for Green Microgrids with Different Energy Storage Devices,&rdquo; conference paper. PHES was cheaper to run because of its lower operating cost, even though BESS is more efficient.</p>
+      </section>
+
+      <!-- Hidden for now at the user's request. Remove "hidden" from the section to bring it back. -->
+      <section class="panel" id="notes-section" aria-labelledby="notes-title" hidden>
+        <h2 id="notes-title">How to read this demonstration</h2>
+        <ul class="notes">
+          <li><strong>The model is simplified.</strong> It is a mixed-integer linear program over 48 hours, so effects such as hydraulic head in PHES and the thermodynamics of CAES are not modelled in detail. Results illustrate behaviour and are not design figures.</li>
+          <li><strong>The optimiser knows the future.</strong> It sees the whole 48 hours of load, solar and price in advance, so its savings are a best case.</li>
+          <li><strong>Equal nameplate does not mean equal usable capacity.</strong> Part of the difference between technologies comes from usable capacity rather than from the storage physics.</li>
+          <li><strong>The load is measured campus data, scaled.</strong> Both saved periods keep their measured hourly shape and are multiplied by one factor, so that the highest hour in the saved data equals the maximum demand you set.</li>
+          <li><strong>The saved periods are examples.</strong> The sunny period was chosen for its large daily price spread, so its savings are near the top of what this data can show.</li>
+          <li><strong>Running costs only.</strong> Costs include grid energy, solar energy and storage operation and maintenance. The cost of building the storage is not included.</li>
+          <li><strong>Efficiency curves.</strong> BESS and PHES use constant efficiency. CAES combines published machine curves with 94% motor and generator efficiency, which gives about 65% round trip at full load and is optimistic. The FCES fuel cell curve excludes balance-of-plant losses and is also optimistic.</li>
+          <li><strong>Rule-based operation</strong> sends solar to the load first, then uses storage, then the grid. Surplus solar charges the storage and the rest is exported. Both rule-based and optimised operation start from the same storage level and are free to end at any level.</li>
+          <li><strong>Disconnecting an element</strong> removes it for the whole two days. With the grid disconnected, the microgrid runs alone: load that solar and storage cannot meet goes unserved, and surplus solar that storage cannot take is spilled.</li>
+        </ul>
+        <p class="cite">Data: IIT Gandhinagar main substation meter, Indian Energy Exchange Green Day-Ahead Market prices, and Open-Meteo reanalysis irradiance and temperature. Efficiency curves: CAES from Li et al., &ldquo;A real-time dispatch model of CAES with considering the part-load characteristics and the power regulation uncertainty,&rdquo; Electrical Power and Energy Systems; electrolyzer from Abomazid et al., IEEE Transactions on Sustainable Energy, vol. 13, no. 3, 2022; fuel cell from Qi et al., &ldquo;Long-term energy management for microgrid with hybrid hydrogen-battery energy storage,&rdquo; Applied Energy. Solar model from Gbadega and Sun, Energy Reports, vol. 8, 2022.</p>
+      </section>
+    </main>
+
+  </div>
+  <footer>Smart Power Electronics Laboratory, Indian Institute of Technology Gandhinagar.</footer>
+  <noscript><p style="padding:16px">This demonstration needs JavaScript to run.</p></noscript>
+  <script type="module" src="js/app.mjs"></script>
+</body>
+</html>

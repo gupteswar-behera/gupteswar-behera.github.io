@@ -1,0 +1,332 @@
+/* ==========================================================================
+   COLOUR GRADIENT BACKGROUND (user, 2026-11-16)
+   Same look as the microgrid demo: blue-200 to green-200 page gradient,
+   blue-100 to green-100 bands (header and footer), white rounded panels.
+   Imported last in assets/css/main.scss.
+
+   Day and night modes (user, 2026-11-17): every layout, card and text-size rule here applies to
+   both modes, so the two look the same. Only the colours differ: they are the variables below,
+   with the night set in "NIGHT MODE COLOURS" at the end of this file.
+   ========================================================================== */
+
+/* Matches both modes with the same selector strength as the old light-only selector,
+   so these rules still win over the template's. */
+$all-themes: 'html:is(:not([data-theme="dark"]), [data-theme="dark"])';
+
+#{$all-themes} {
+  --page-from: #bfdbfe;
+  --page-to: #bbf7d0;
+  --band-from: #dbeafe;
+  --band-to: #dcfce7;
+  --band-glow: rgba(255, 255, 255, 0.65);
+  --band-glow-end: rgba(255, 255, 255, 0);
+  --card-bg: #ffffff;
+  --menu-bg: rgba(255, 255, 255, 0.92);
+  --panel-shadow: 0 18px 40px -14px rgba(30, 64, 175, 0.28), 0 6px 14px -8px rgba(15, 23, 42, 0.14);
+
+  background: linear-gradient(90deg, var(--page-from), var(--page-to)) fixed;
+  body {
+    background: transparent;
+  }
+
+  /* Header and footer (user, 2026-11-17): solid, with the same blue-to-green colours as the page,
+     lightened at the outer edge and fading out to the page colour at the inner edge, so there is
+     no visible boundary where they meet the body. */
+  .masthead {
+    background:
+      linear-gradient(to bottom, var(--band-glow), var(--band-glow-end)),
+      linear-gradient(90deg, var(--page-from), var(--page-to));
+    border: 0;
+    box-shadow: none;
+  }
+  .masthead::after { display: none; }
+  .page__footer {
+    background:
+      linear-gradient(to top, var(--band-glow), var(--band-glow-end)),
+      linear-gradient(90deg, var(--page-from), var(--page-to));
+    border: 0;
+    box-shadow: none;
+  }
+  .masthead__menu-item,
+  .greedy-nav,
+  .greedy-nav button {
+    background: transparent;
+  }
+  .greedy-nav .hidden-links {
+    background: var(--menu-bg);
+  }
+
+  /* White rounded panels: the sidebar and the page content */
+  .sidebar,
+  .page__inner-wrap,
+  .archive__panel {
+    background: var(--card-bg);
+    border-radius: 18px;
+    box-shadow: var(--panel-shadow);
+    box-sizing: border-box;
+  }
+  .page__inner-wrap,
+  .archive__panel {
+    padding: 8px 28px 24px;
+  }
+  .sidebar {
+    padding: 16px;
+  }
+  @media screen and (min-width: 768px) {
+    .sidebar {
+      position: sticky;
+      top: calc(#{$masthead-height} + 1.5em);
+      bottom: auto;
+      max-height: calc(100vh - #{$masthead-height} - 3em);
+      padding-top: 16px !important;
+    }
+  }
+
+  /* Pages with a sidebar (user, 2026-11-16): two flexible columns on wide screens.
+     Left card: 24 % of the width but never narrower than 250 px (and never wider than 380 px).
+     Right card: takes all the remaining width, so it grows and shrinks with the window. */
+  @media screen and (min-width: 768px) {
+    .masthead__inner-wrap {
+      max-width: none;
+      padding-left: 2em;
+      padding-right: 2em;
+    }
+    #main:has(> .sidebar) {
+      display: grid;
+      grid-template-columns: clamp(250px, 24%, 380px) minmax(0, 1fr);
+      column-gap: 2em;
+      align-items: start;
+      max-width: none;
+      padding-left: 2em;
+      padding-right: 2em;
+
+      &::before,
+      &::after {
+        display: none;
+      }
+      > .sidebar {
+        float: none;
+        width: auto;
+        max-width: none;
+        margin: 0;
+        padding-right: 16px;
+      }
+      > .page,
+      > .archive {
+        float: none;
+        width: auto;
+        max-width: none;
+        margin: 0 0 2em;
+        padding: 0;
+      }
+    }
+  }
+
+  /* From 768 px up the sidebar shows its full desktop content (the template does this only from 925 to 1024 px) */
+  @media screen and (min-width: 768px) {
+    .sidebar {
+      .author__avatar { display: block; width: auto; height: auto; }
+      .author__avatar img { padding: 5px; border: 1px solid var(--global-border-color); max-width: 175px; }
+      .author__name { margin-top: 0.9em; }
+      .author__bio { margin-top: 0.4em; }
+      .author__content { display: block; width: 100%; padding-left: 0; padding-right: 0; }
+      .author__urls-wrapper { display: block; }
+      .author__urls-wrapper button { display: none; }
+      .author__desktop { display: block; }
+      .author__urls {
+        display: block;
+        position: relative;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+        &::before, &::after { display: none; }
+      }
+    }
+  }
+}
+
+/* Footer: copyright on the left, last-updated date on the right, on one line */
+.footer-line {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 2em;
+}
+
+/* Cards inside a page (user, 2026-11-16): a page made of ".card" blocks (About, Research, CV),
+   or of list items (Publications, Projects), shows each block as its own white card
+   instead of one big one. */
+#{$all-themes} {
+  .page__inner-wrap:has(.page__content > .card),
+  .archive__panel:has(> .card),
+  .archive__panel:has(.list__item) {
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+  .page__inner-wrap:has(.page__content > .card) .page__title { display: none; }
+
+  .card,
+  .archive__panel:has(.list__item) .list__item,
+  .archive__panel:has(.list__item) > .page__title,
+  .archive__panel:has(.list__item) > h2 {
+    background: var(--card-bg);
+    border-radius: 18px;
+    box-shadow: var(--panel-shadow);
+    box-sizing: border-box;
+    padding: 8px 28px 24px;
+    margin: 0 0 24px;
+    width: 100%;
+  }
+  .card > :first-child { margin-top: 0.6em; }
+  .archive__panel:has(.list__item) > .page__title,
+  .archive__panel:has(.list__item) > h2 {
+    padding: 14px 28px;
+    margin-top: 0;
+  }
+  .archive__panel:has(.list__item) > hr { display: none; }
+  .archive__panel:has(.list__item) .archive__item-title { margin-top: 0.6em; }
+}
+
+/* Publications (user, 2026-11-19): one card per section, heading and papers together,
+   papers numbered 1, 2, 3 ... */
+#{$all-themes} {
+  .pub-list { margin: 0.8em 0 0; padding-left: 1.6em; }
+  .pub-item { margin: 0 0 1.2em; }
+  .pub-item:last-child { margin-bottom: 0; }
+  .pub-item::marker { color: var(--c-head); font-weight: 700; }
+  .pub-item p, .pub-item .pub-summary p { margin: 0 0 0.4em; }
+  .pub-title a { font-weight: 700; }
+}
+
+/* The CV card already carries the page title */
+#{$all-themes} .archive__panel:has(> .card) > .page__title { display: none; }
+
+/* ==========================================================================
+   TEXT COLOURS (user, 2026-11-16): the demo's blues, with a green line under card headings.
+   ========================================================================== */
+#{$all-themes} {
+  --c-head: #1e40af; --c-body: #1f2937; --c-bold: #1e3a8a; --c-link: #2563eb; --c-rule: #10b981;
+}
+
+#{$all-themes} {
+  .card, .page__content, .archive__item, .archive__panel, .sidebar p, .sidebar li,
+  .sidebar .author__bio, .sidebar .author__urls li, .page__inner-wrap {
+    color: var(--c-body);
+  }
+  .card h1, .card h2, .card h3, .card h4,
+  .page__title, .archive__panel > h2, .archive__item-title, .archive__item-title a,
+  .sidebar .author__name {
+    color: var(--c-head);
+  }
+  .card strong, .card b, .archive__item strong, .page__content strong {
+    color: var(--c-bold);
+  }
+  .card a, .archive__item a, .page__content a, .sidebar a {
+    color: var(--c-link);
+  }
+  .card h2, .archive__item-title {
+    border-bottom-color: var(--c-rule);
+  }
+  .sidebar i.fas { color: var(--c-head); }
+}
+
+#{$all-themes} .card h2 {
+  border-bottom: 2px solid var(--c-rule);
+}
+
+/* Header menu follows the chosen colour set (user, 2026-11-16) */
+#{$all-themes} {
+  .greedy-nav .visible-links a,
+  .greedy-nav .hidden-links a { color: var(--c-body); }
+  .greedy-nav .visible-links .masthead__menu-item--lg a { color: var(--c-head); font-weight: 700; }
+  .greedy-nav .visible-links .selected a,
+  .greedy-nav .visible-links a:hover { color: var(--c-head); }
+  .greedy-nav .visible-links a:before,
+  .greedy-nav #theme-toggle > button:before { background: var(--c-rule); }
+  #theme-toggle button, #theme-icon { color: var(--c-head); }
+}
+#{$all-themes} .masthead__menu-item.selected a,
+#{$all-themes} .masthead__menu-item.selected a:hover {
+  border-bottom-color: var(--c-rule);
+}
+
+/* Demo tab: the line above the embedded demo is a card with the same text colours.
+   The demo itself (the frame) already uses these blues, and stays as it is. */
+/* Same width, padding, gap and font as the demo's own panels (user, 2026-11-19). The demo's panels sit in
+   .wrap { max-width: 1280px; padding: 24px } inside the frame, and the frame is as wide as this card's parent,
+   so this card is min(100%, 1280px) - 48px wide, centred, with the demo's 24px gap below it (the demo's own
+   top padding). Below 620px of frame width (about 652px of window) the demo uses 12px padding and 17px text. */
+#{$all-themes} .embed-intro {
+  box-sizing: border-box;
+  width: calc(min(100%, 1280px) - 48px);
+  margin: 24px auto 0;
+  padding: 34px 36px;
+  background: var(--card-bg);
+  border-radius: 18px;
+  box-shadow: var(--panel-shadow);
+  color: var(--c-body);
+  font-family: "Times New Roman", Times, serif;
+  font-size: 18px;
+  line-height: 1.5;
+  a { color: var(--c-link); font-size: 18px; }
+}
+@media (max-width: 652px) {
+  #{$all-themes} .embed-intro {
+    width: calc(100% - 24px);
+    margin-top: 12px;
+    padding: 22px 16px;
+    border-radius: 14px;
+    font-size: 17px;
+  }
+}
+
+/* Footer text colour */
+#{$all-themes} .page__footer,
+#{$all-themes} .page__footer .page__footer-copyright {
+  color: var(--c-body);
+}
+
+/* Top menu at the same size as the card headings (user, 2026-11-17), so the two do not look mismatched */
+#{$all-themes} {
+  .greedy-nav .visible-links a,
+  .greedy-nav .hidden-links a,
+  .masthead__menu-item,
+  .greedy-nav button {
+    font-size: 1.25rem;
+  }
+  #theme-icon { font-size: 1.1rem; }
+}
+
+/* Sidebar: the name at the same size as the menu and card headings, the lines below it at body size (user, 2026-11-17) */
+#{$all-themes} .sidebar {
+  .author__name { font-size: 1.25rem; }
+  .author__bio,
+  p, li, li a,
+  .author__urls li {
+    font-size: 1rem;
+  }
+}
+
+/* ==========================================================================
+   NIGHT MODE COLOURS (user, 2026-11-17)
+   The day look at night: the same blue-to-green page and bands in deep shades,
+   dark slate cards, and lighter blues and green for the text so it reads on them.
+   Sizes and layout come from the rules above, shared with day mode.
+   ========================================================================== */
+html[data-theme="dark"] {
+  --page-from: #0f2547;
+  --page-to: #0c3527;
+  --band-from: #0f2547;
+  --band-to: #0c3527;
+  --band-glow: rgba(255, 255, 255, 0.07);
+  --band-glow-end: rgba(255, 255, 255, 0);
+  --card-bg: #1e293b;
+  --menu-bg: rgba(30, 41, 59, 0.96);
+  --panel-shadow: 0 18px 40px -14px rgba(0, 0, 0, 0.6), 0 6px 14px -8px rgba(0, 0, 0, 0.45);
+
+  --c-head: #93c5fd; --c-body: #e5e7eb; --c-bold: #bfdbfe; --c-link: #60a5fa; --c-rule: #34d399;
+  --global-border-color: #475569;
+}

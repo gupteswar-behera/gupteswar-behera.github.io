@@ -1,0 +1,22 @@
+# Order of the links in the header of the website.
+
+main:
+  - title: "Research"
+    url: /research/
+
+  - title: "Publications"
+    url: /publications/
+
+  # Projects removed from the menu for now (user, 2026-11-19). To bring it back, restore these two lines, move
+  # _pages/portfolio.html and _portfolio/ back from my_details/removed_from_site/hidden_pages/ (and remove their
+  # "published: false"), and restore the link in _pages/demo.html:
+  # - title: "Projects"
+  #   url: /projects/
+
+  - title: "Demo"
+    url: /demo/
+
+  # CV removed from the menu for now (user, 2026-11-19). To bring it back, restore these two lines, move
+  # _pages/cv.md back from my_details/removed_from_site/hidden_pages/ and remove its "published: false":
+  # - title: "CV"
+  #   url: /cv/

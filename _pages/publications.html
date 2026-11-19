@@ -1,0 +1,46 @@
+---
+layout: archive
+title: "Publications"
+hide_title: true   # no "Publications" card at the top (user, 2026-11-19); the title still names the browser tab
+permalink: /publications/
+author_profile: true
+---
+
+{% include base_path %}
+
+<!-- One card per section (user, 2026-11-19): the heading and its papers sit together in the same card,
+     as a numbered list. Each paper shows its title, venue and year, summary, and DOI (the "doi:" field
+     in its _publications file, without https://doi.org/). Sections and their order are in
+     publication_category in _config.yml. -->
+{% for category in site.publication_category %}
+  {% assign posts = site.publications | where: "category", category[0] | sort: "date" | reverse %}
+  {% if posts.size > 0 or category[1].always_show %}
+<div class="card pub-section">
+  <h2>{{ category[1].title }}</h2>
+  {% if posts.size > 0 %}
+  <ol class="pub-list">
+    {% for post in posts %}
+    <li class="pub-item">
+      {% if post.paperurl %}
+      <p class="pub-title"><a href="{{ post.paperurl }}" target="_blank" rel="noopener">{{ post.title }}</a></p>
+      {% elsif post.category == "patents" %}
+      <p class="pub-title"><strong>{{ post.title }}</strong></p>
+      {% else %}
+      <p class="pub-title"><a href="{{ base_path }}{{ post.url }}">{{ post.title }}</a></p>
+      {% endif %}
+      {% if post.category == "patents" %}
+      <p class="pub-venue">Inventors: {{ post.inventors }}</p>
+      <p class="pub-venue">Applicant: {{ post.applicant }}</p>
+      <p class="pub-venue"><i>{{ post.venue }}</i>, publication no. {{ post.publication_no }}, application no. {{ post.application_no }}. Filed {{ post.filing_date | date: "%-d %B %Y" }}; published {{ post.date | date: "%-d %B %Y" }} (Patent Office Journal No. {{ post.journal_no }}).</p>
+      {% else %}
+      <p class="pub-venue">Published in <i>{{ post.venue }}</i>, {{ post.date | date: "%Y" }}</p>
+      {% endif %}
+      {% if post.excerpt %}<div class="pub-summary">{{ post.excerpt | markdownify }}</div>{% endif %}
+      {% if post.doi %}<p class="pub-doi">DOI: <a href="https://doi.org/{{ post.doi }}" target="_blank" rel="noopener">{{ post.doi }}</a></p>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+  {% endif %}
+</div>
+  {% endif %}
+{% endfor %}
