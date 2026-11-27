@@ -7,11 +7,12 @@ main:
   - title: "Publications"
     url: /publications/
 
-  # Projects removed from the menu for now (user, 2026-11-19). To bring it back, restore these two lines, move
-  # _pages/portfolio.html and _portfolio/ back from my_details/removed_from_site/hidden_pages/ (and remove their
-  # "published: false"), and restore the link in _pages/demo.html:
-  # - title: "Projects"
-  #   url: /projects/
+  # Projects (user, 2026-11-27): only the CO2 intensity forecast, listed in _pages/projects.md.
+  # The old Projects page and its two items stay hidden in my_details/removed_from_site/hidden_pages/
+  # (_pages/portfolio.html and _portfolio/, "published: false"); they used /projects/ too, so change one
+  # permalink if they come back.
+  - title: "Projects"
+    url: /projects/
 
   - title: "Demo"
     url: /demo/

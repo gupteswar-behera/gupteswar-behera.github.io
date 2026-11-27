@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grid CO₂ intensity forecast</title>
+  <meta name="description" content="Hourly CO₂ intensity of the Indian grid: a 48-hour forecast, updated every day, compared with measured values.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="wrap">
+
+    <section class="card">
+      <h2>Hourly CO₂ intensity of the Indian grid</h2>
+      <p>Grid CO₂ intensity is the mass of CO₂ emitted for each megawatt-hour of electricity generated in India,
+        hour by hour; it is lowest around midday, when solar generation is high, and highest at night, when coal
+        carries most of the load.
+        Knowing it a day or two ahead lets flexible use, such as charging a battery, move to the cleanest hours.</p>
+    </section>
+
+    <section class="card" id="next">
+      <h2>Next 48 hours</h2>
+      <p class="meta" id="next-meta">Loading…</p>
+      <div class="chart-box tall"><canvas id="chart-next" aria-label="Forecast of the next 48 hours"></canvas></div>
+      <div class="legend" id="legend-next"></div>
+      <div class="hours-table" id="next-hours"></div>
+    </section>
+
+    <section class="card" id="history">
+      <h2>Forecast against measured values</h2>
+      <div class="controls">
+        <label for="window">Show</label>
+        <select id="window">
+          <option value="2">Last 2 days</option>
+          <option value="7" selected>Last 7 days</option>
+          <option value="14">Last 14 days</option>
+          <option value="30">Last 1 month (30 days)</option>
+        </select>
+        <span class="meta" id="window-meta"></span>
+      </div>
+
+      <div class="table-scroll">
+        <table class="scores" id="scores">
+          <thead>
+            <tr><th></th><th>Same-day forecast</th><th>Day-ahead forecast</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="chart-box tall"><canvas id="chart-hist" aria-label="Forecast against measured, hourly"></canvas></div>
+      <div class="legend" id="legend-hist"></div>
+
+      <h3>Daily mean absolute percentage error</h3>
+      <div class="chart-box"><canvas id="chart-daily" aria-label="Daily mean absolute percentage error"></canvas></div>
+      <div class="legend" id="legend-daily"></div>
+    </section>
+
+    <section class="card" id="notes">
+      <h2>Notes</h2>
+      <ul>
+        <li>The <strong>same-day forecast</strong> of a day is issued at 00:00 of that day; the
+          <strong>day-ahead forecast</strong> is issued at 00:00 of the day before. Each forecast uses only data
+          up to its issue time.</li>
+        <li>Errors are the mean absolute percentage error (MAPE) and the mean absolute error (MAE) in kg/MWh,
+          over every measured hour of the days shown. The baseline, “yesterday repeated”, takes the last measured
+          day as the forecast.</li>
+        <li>Forecasts for the days before the daily updates began were computed afterwards in the same way,
+          using only data up to each issue time. Since then, each day's forecast is saved as published and never
+          changed.</li>
+      </ul>
+    </section>
+
+    <section class="card" id="sources">
+      <h2>Data sources</h2>
+      <p>Generation data: The CSEP Electricity and Carbon Tracker
+        (<a href="https://carbontracker.in/" target="_blank" rel="noopener">carbontracker.in</a>).
+        Emission factors: Central Electricity Authority, CO₂ Baseline Database for the Indian Power Sector,
+        version 22.0.</p>
+    </section>
+
+  </main>
+  <script src="vendor/chart-4.4.9.umd.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

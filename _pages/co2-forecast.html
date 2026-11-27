@@ -1,0 +1,39 @@
+---
+layout: embed
+title: "Grid CO₂ intensity forecast"
+permalink: /projects/co2-forecast/
+---
+
+<style>
+  .embed-main { max-width: 1100px; margin: 0 auto; padding: 0 1em 2em; }
+  /* The template fixes the footer to the bottom of the window; on this long page it would cover the charts. */
+  .page__footer { position: static; }
+  body { margin-bottom: 0 !important; }
+  #co2-frame { display: block; width: 100%; height: 2600px; border: 0; overflow: hidden; margin-top: 0.8em; }
+</style>
+
+<iframe id="co2-frame" src="{{ '/co2-forecast/' | relative_url }}" title="Grid CO2 intensity forecast" scrolling="no"></iframe>
+
+<script>
+  /* The forecast page lives in /co2-forecast/ on the same site. The frame is resized to its full height, */
+  /* so the page scrolls as one page with no scroll bar inside the frame. */
+  (function () {
+    var frame = document.getElementById('co2-frame');
+    function fit() {
+      try {
+        var doc = frame.contentDocument;
+        if (!doc || !doc.documentElement) return;
+        var h = Math.ceil(doc.documentElement.getBoundingClientRect().height);
+        if (h > 0 && Math.abs(frame.offsetHeight - h) > 2) frame.style.height = h + 'px';
+      } catch (e) { /* not same origin: keep the fixed height */ }
+    }
+    frame.addEventListener('load', function () {
+      fit();
+      [100, 800, 2000].forEach(function (ms) { setTimeout(fit, ms); });
+      try {
+        if (window.ResizeObserver) new ResizeObserver(fit).observe(frame.contentDocument.body);
+      } catch (e) {}
+      setInterval(fit, 1000);
+    });
+  })();
+</script>

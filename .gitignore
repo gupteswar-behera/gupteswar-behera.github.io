@@ -30,6 +30,8 @@ assets/js/main.min.js
 my_details/
 # Working notes about the site
 History and chat.md
+# Instructions for the CO2 forecast page (2026-11-27)
+CO2_FORECAST_PAGE_TASK.md
 # Local start script for this PC
 start_site.bat
 # Jekyll cache

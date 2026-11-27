@@ -175,6 +175,7 @@ include:
 exclude:
   - my_details
   - "History and chat.md"
+  - CO2_FORECAST_PAGE_TASK.md
   - "*.sublime-project"
   - "*.sublime-workspace"
   - .asset-cache
