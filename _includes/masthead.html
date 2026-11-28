@@ -17,6 +17,12 @@
               <a href="{{ domain }}{{ link.url }}">{{ link.title }}</a>
             </li>
           {% endfor %}
+          {% comment %} Extra menu items for the local preview only: _data/navigation_local.yml is not in the repository. {% endcomment %}
+          {% for link in site.data.navigation_local.main %}
+            <li class="masthead__menu-item {% if page.url contains link.url and link.url != '/' %}selected{% endif %}">
+              <a href="{{ base_path }}{{ link.url }}">{{ link.title }}</a>
+            </li>
+          {% endfor %}
           <li id="theme-toggle" class="masthead__menu-item persist tail">
             <button type="button" aria-label="Toggle color theme"><i id="theme-icon" class="fa-solid fa-sun" aria-hidden="true" title="toggle theme"></i></button>
           </li>
