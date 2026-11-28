@@ -68,16 +68,64 @@ permalink: /demo/
         doc.head.appendChild(st);
       } catch (e) {}
     }
+    /* Night mode (user, 2026-11-28): the demo itself is light only, so when the site is in night mode a dark set */
+    /* of its colour variables is added from here (the microgrid-demo/ copy stays unchanged), and removed again */
+    /* in day mode. The demo draws its diagrams and charts from these variables, so they follow too. */
+    var DARK_CSS = [
+      ':root { color-scheme: dark;',
+      '  --band-from: #1e3a5f; --band-to: #14433b;',
+      '  --accent: #3b82f6; --accent-dark: #93c5fd; --heading: #93c5fd;',
+      '  --surface: #1e293b; --ink: #e5e7eb; --ink-2: #cbd5e1; --muted: #94a3b8;',
+      '  --grid: #3b4a61; --axis: #52627a; --border: #334155;',
+      '  --series-grid: #4f9be8; --series-opt: #8f80f2; --series-rule: #b4b2ac; --series-diesel: #d46cc0;',
+      '  --shadow-lg: 0 18px 40px -14px rgba(0, 0, 0, 0.6), 0 6px 14px -8px rgba(0, 0, 0, 0.4);',
+      '  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35); }',
+      'body { color: var(--ink); }',
+      '.rating-value input, .cost-input input, .sys-rating input[type="number"], .sys-rating select { background: #0f172a; }',
+      'tr.selected td { background: #1e3a5f; }',
+      'button.primary:hover { background: #2563eb; }',
+      '.node-box { filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.5)); }',
+      '.node-unserved { fill: #4c1414; }',
+      '.node-short { fill: #f87171; }',
+      /* Icons are drawn for a white background, so each sits on a light rounded tile. */
+      '.art, .slot img, .rating img, .sys-head img, h4 img { background: #e2e8f0; border-radius: 8px; padding: 2px; }',
+      /* In the power-flow diagrams the black grid tower has no tile, so it is drawn light instead. */
+      'image[href$="grid.png"] { filter: invert(1) hue-rotate(180deg); }',
+      '.art image[href$="grid.png"] { filter: none; }'
+    ].join('\n');
+    function siteDark() { return document.documentElement.getAttribute('data-theme') === 'dark'; }
+    function applyTheme() {
+      /* The frame must share the page's colour scheme, or the browser paints an opaque backdrop behind it. */
+      frame.style.colorScheme = siteDark() ? 'dark' : '';
+      try {
+        var doc = frame.contentDocument;
+        if (!doc || !doc.head) return;
+        var st = doc.getElementById('site-dark-style');
+        if (siteDark() && !st) {
+          st = doc.createElement('style');
+          st.id = 'site-dark-style';
+          st.textContent = DARK_CSS;
+          doc.head.appendChild(st);
+        } else if (!siteDark() && st) {
+          st.remove();
+        }
+      } catch (e) {}
+    }
+    if (window.MutationObserver) {
+      new MutationObserver(applyTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    }
+
     /* Hide it as early as possible, so the band does not flash before the frame finishes loading. */
     var early = setInterval(function () {
       try {
         var doc = frame.contentDocument;
-        if (doc && doc.location.href !== 'about:blank' && doc.head) { hideTopbar(); clearInterval(early); }
+        if (doc && doc.location.href !== 'about:blank' && doc.head) { hideTopbar(); applyTheme(); clearInterval(early); }
       } catch (e) { clearInterval(early); }
     }, 20);
 
     frame.addEventListener('load', function () {
       hideTopbar();
+      applyTheme();
       fit();
       /* Charts above the part render after the first solve, so place it again once they settle. */
       [100, 800, 2000, 4000].forEach(function (ms) { setTimeout(function () { fit(); goToPart(); }, ms); });
